@@ -8,11 +8,6 @@ module Soomo
       include Logger
       include Cache
 
-      OAUTH_KEY    = ENV['SOOMO_CORE_OAUTH_KEY']
-      OAUTH_SECRET = ENV['SOOMO_CORE_OAUTH_SECRET']
-      HOSTNAME     = ENV['SOOMO_CORE_HOSTNAME']
-      PROTOCOL     = ENV['RAILS_ENV'] == "production" ? 'https://' : 'http://'
-
       def get(path, params={}, headers={})
         query = params.map{|k,v| "#{CGI.escape k.to_s}=#{CGI.escape v.to_s}" }.join('&')
         path = "/api/internal#{path}.json"
@@ -42,7 +37,23 @@ module Soomo
       end
 
       def consumer
-        @consumer ||= ::OAuth::Consumer.new(OAUTH_KEY, OAUTH_SECRET, :site => PROTOCOL + HOSTNAME)
+        @consumer ||= ::OAuth::Consumer.new(oauth_key, oauth_secret, :site => protocol + hostname)
+      end
+
+      def oauth_key
+        ENV['SOOMO_CORE_OAUTH_KEY']
+      end
+
+      def oauth_secret
+        ENV['SOOMO_CORE_OAUTH_SECRET']
+      end
+
+      def protocol
+        ENV['RAILS_ENV'] == "production" ? 'https://' : 'http://'
+      end
+
+      def hostname
+        ENV['SOOMO_CORE_HOSTNAME']
       end
     end
   end

@@ -15,6 +15,10 @@ module Soomo
         end.map {|attrs| new(attrs['course']) }
       end
 
+      def updated_at=(_updated_at)
+        @updated_at = _updated_at.kind_of?(String) ? Time.parse(_updated_at) : _updated_at
+      end
+
       def resource_type=(type)
         return @resource_type = nil if type.blank?
 

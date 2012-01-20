@@ -2,7 +2,7 @@ module Soomo
 
   # Public: Proxy to whatever exception service is in use.
   class ExceptionService
-    extend Logger
+    include Logger
 
     def self.notify(exception)
       exception = RuntimeError.new(exception) if exception.kind_of?(String)
