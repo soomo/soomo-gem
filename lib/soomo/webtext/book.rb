@@ -14,6 +14,8 @@ module Soomo
         end
       end
 
+      attr_ignore :type
+
     end
   end
 end

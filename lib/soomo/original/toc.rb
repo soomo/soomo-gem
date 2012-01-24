@@ -14,6 +14,9 @@ module Soomo
         end
       end
 
+      attr_ignore :chapters, :textbook_id, :description,
+                  :publisher_id, :title_id, :type
+
     end
   end
 end
