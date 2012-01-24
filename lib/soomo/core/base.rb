@@ -21,8 +21,16 @@ module Soomo
         @api ||= Api.new
       end
 
+      def api=(api)
+        @api = api
+      end
+
       def self.api
         @api ||= Api.new
+      end
+
+      def self.api=(api)
+        @api = api
       end
 
     end
