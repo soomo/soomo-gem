@@ -10,14 +10,37 @@ module Soomo
 
     module Methods
       def cache
-        defined?(Rails) ? Rails.cache : NilFactory.instance
+        defined?(Rails) ? Rails.cache : DumbCache.instance
       end
+    end
 
-      class NilFactory
-        include Singleton
-        def method_missing(method, *args, &block)
-          nil
+    class DumbCache
+      include Singleton
+      def initialize
+        @cache = {}
+      end
+      def read(key, options={})
+        @cache[key]
+      end
+      def write(key, value=nil, options={}, &block)
+        if block_given?
+          @cache[key] = block.call
+        else
+          @cache[key] = value
         end
+      end
+      def fetch(key, value=nil, options={}, &block)
+        if options[:force]
+          write(key, value, options, &block)
+        else
+          read(key) || write(key, value, options, &block)
+        end
+      end
+      def delete(key, options={})
+        @cache.delete(key) || false
+      end
+      def method_missing(method, *args, &block)
+        raise "DumbCache##{method} not implemented."
       end
     end
 

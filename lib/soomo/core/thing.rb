@@ -1,7 +1,7 @@
 module Soomo
   module Core
     class Thing < Base
-      extend Cache
+      include Cache
 
       attr_accessor :properties, :type, :uri
 

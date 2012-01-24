@@ -1,14 +1,17 @@
 module Soomo
   module Core
     class Catalog < Base
-      extend Cache
+      include Cache
 
       attr_accessor :repo, :title_id, :uri, :entries
 
-      def self.find(repo, title_id=nil)
-        path = "/catalogs/#{repo}"
-        params = title_id ? {title_id: title_id} : {}
-        new(api.get(path, params)['catalog'])
+      def self.find(repo, title_id=nil, bust_cache=false)
+        attrs = cache.fetch("soomo/core/catalogs/#{repo}/titles/#{title_id}/response", :expires_in => 30.minutes, :force => bust_cache) do
+          path = "/catalogs/#{repo}"
+          params = title_id ? {title_id: title_id} : {}
+          api.get(path, params)['catalog']
+        end
+        new(attrs)
       end
 
       def initialize(*args)
@@ -22,13 +25,13 @@ module Soomo
         @title_id = $1
       end
 
-      def things
+      def things(bust_cache=true)
         @things ||= begin
-          path = "/catalogs/#{repo}/things"
-          params = title_id ? {title_id: title_id} : {}
-          api.get(path, params)['things'].map {|attrs|
-            Thing.new(attrs['thing'])
-          }
+          cache.fetch("soomo/core/catalogs/#{repo}/titles/#{title_id}/things/response", force: bust_cache) do
+            path = "/catalogs/#{repo}/things"
+            params = title_id ? {title_id: title_id} : {}
+            api.get(path, params)['things']
+          end.map {|attrs| Thing.new(attrs['thing']) }
         end
       end
 

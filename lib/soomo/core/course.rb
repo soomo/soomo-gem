@@ -1,7 +1,7 @@
 module Soomo
   module Core
     class Course < Base
-      extend Cache
+      include Cache
 
       attr_accessor :uri, :id, :name, :number, :instructor_id, :resource_type, :resource_id, :created_at, :updated_at
 
